@@ -15,13 +15,17 @@ var enemy = {
 	speed:5,
 	moving: 0,
 	dirx:0,
-	diry:0
+	diry:0,
+	flash:0,
+	ghosteat:false
 }
 
 var powerdot = {
 	x:10,
 	y:10,
-	powerup:false
+	powerup:false,
+	pcountdown:0,
+	ghostNum:0
 }
 
 var canvas = document.createElement("canvas");
@@ -103,7 +107,7 @@ function render() {
 	context.fillRect(0,0,canvas.width,canvas.height);
 	
 	// create powerdot render
-	if(!powerdot.powerup){
+	if(!powerdot.powerup && powerdot.pcountdown < 5){
 		powerdot.x = myNum(430)+30;
 		powerdot.y = myNum(250);
 		powerdot.powerup = true;
@@ -154,6 +158,30 @@ function render() {
 		enemy.y = canvas.height - 32;
 	}
 
+	// Collision detection 
+	if( player.x <= (powerdot.x) && 
+		powerdot.x <= (player.x+32) && 
+		player.y <= (powerdot.y-10) && 
+		powerdot.y <= (player.y+32))
+	{  //denter point minus border
+		powerdot.powerup = false;
+		powerdot.pcountdown =500;
+		powerdot.ghostNum= enemy.ghostNum;
+		enemy.ghostNum = 384;
+		powerdot.x = 0;
+		powerdot.y = 0;
+		enemy.ghosteat = true;
+	}
+	// Collision enemy
+	if(enemy.ghosteat){
+		powerdot.pcountdown--;
+		if(powerdot.pcountdown <=0){
+			enemy.ghosteat=false;
+			enemy.ghostNum = powerdot.ghostNum;
+		}
+	}
+
+	
 	// create powerdot render
 	if(powerdot.powerup){
 		context.fillStyle = "#ffffff";
@@ -162,13 +190,20 @@ function render() {
 		context.closePath();
 		context.fill();
 	}
+
+	// flash ghost
+	if(enemy.flash == 0){
+		enemy.flash = 32;
+	}else{
+		enemy.flash = 0;
+	}
 	// text over screen
 	context.font = "20px Verdana";
 	context.fillStyle = "white";
 	context.fillText("Pacman: "+score+" vs Ghost:"+gscore,2,18);
 
 	// animations
-	context.drawImage(mainImage,enemy.ghostNum,0,32,32,enemy.x,enemy.y,32,32);  
+	context.drawImage(mainImage,enemy.ghostNum,enemy.flash,32,32,enemy.x,enemy.y,32,32);  
 	context.drawImage(mainImage,player.pacmouth,player.pacdir,32,32,player.x,player.y,player.psize,player.psize); 
 
 
