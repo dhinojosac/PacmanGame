@@ -18,6 +18,12 @@ var enemy = {
 	diry:0
 }
 
+var powerdot = {
+	x:10,
+	y:10,
+	powerup:false
+}
+
 var canvas = document.createElement("canvas");
 var context =canvas.getContext('2d');
 document.body.appendChild(canvas);
@@ -95,6 +101,13 @@ function render() {
 	// background
 	context.fillStyle = "black";
 	context.fillRect(0,0,canvas.width,canvas.height);
+	
+	// create powerdot render
+	if(!powerdot.powerup){
+		powerdot.x = myNum(430)+30;
+		powerdot.y = myNum(250);
+		powerdot.powerup = true;
+	}
 
 	// create enemy render
 	if(!ghost){
@@ -103,11 +116,10 @@ function render() {
 		enemy.y = myNum(250);
 		ghost = true;
 	}
-
 	if(enemy.moving <0){
-		enemy.moving = (myNum(30)*3)+10 +myNum(1);  // random number
+		enemy.moving = (myNum(10)*3) +myNum(1);  // random number
 		//console.log(enemy.moving);
-		enemy.speed = myNum(5);
+		enemy.speed = myNum(3)+1;
 		enemy.dirx = 0;
 		enemy.diry = 0;
 		if(enemy.moving % 2){				// 50% chances 
@@ -128,6 +140,28 @@ function render() {
 	enemy.x = enemy.x + enemy.dirx;
 	enemy.y = enemy.y + enemy.diry;
 
+	//limits enemy
+	if (enemy.x >= (canvas.width - 32)) {
+		enemy.x = 0;
+	}
+	if (enemy.y >= (canvas.height - 32)) {
+		enemy.y = 0;
+	}
+	if (enemy.x < (0)) { //limit
+		enemy.x = canvas.width - 32;
+	}
+	if (enemy.y < (0)) {
+		enemy.y = canvas.height - 32;
+	}
+
+	// create powerdot render
+	if(powerdot.powerup){
+		context.fillStyle = "#ffffff";
+		context.beginPath();
+		context.arc(powerdot.x,powerdot.y,10,0, Math.PI*2, true);
+		context.closePath();
+		context.fill();
+	}
 	// text over screen
 	context.font = "20px Verdana";
 	context.fillStyle = "white";
