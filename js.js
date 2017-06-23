@@ -126,6 +126,10 @@ function render() {
 		enemy.speed = myNum(3)+1;
 		enemy.dirx = 0;
 		enemy.diry = 0;
+		// change behavior when ghost is blue
+		if(enemy.ghosteat){
+			enemy.speed = enemy.speed * -1 ;
+		}
 		if(enemy.moving % 2){				// 50% chances 
 			if (player.x < enemy.x) {
 				enemy.dirx = -enemy.speed;
@@ -141,7 +145,7 @@ function render() {
 		}
 	}
 	enemy.moving--;
-	enemy.x = enemy.x + enemy.dirx;
+	enemy.x = enemy.x + enemy.dirx;		// movement ghost
 	enemy.y = enemy.y + enemy.diry;
 
 	//limits enemy
@@ -158,7 +162,22 @@ function render() {
 		enemy.y = canvas.height - 32;
 	}
 
-	// Collision detection 
+
+	// Collision detection ghost
+	if( player.x <= (enemy.x) && 
+		enemy.x <= (player.x+26) && 
+		player.y <= (enemy.y+26) && 
+		enemy.y <= (player.y+32))
+	{  //denter point minus border
+		console.log('ghost');
+		if(enemy.ghosteat){
+			score++;
+		}else{
+			gscore++;
+		}
+	}
+
+	// Collision detection power dot
 	if( player.x <= (powerdot.x) && 
 		powerdot.x <= (player.x+32) && 
 		player.y <= (powerdot.y-10) && 
